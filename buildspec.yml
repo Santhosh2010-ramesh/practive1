@@ -1,0 +1,31 @@
+version: 2.0
+env:
+  variables:
+    IMAGE_TAG: latest
+    ACCOUNT_ID: 026090550003
+    REGION: us-east-1
+    REPO_NAME: base
+    IMAGE_URI: 026090550003.dkr.ecr.us-east-1.amazonaws.com/base
+
+phases:
+  pre-build:
+    commands:
+      - echo Logging into Amazon ECR
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 026090550003.dkr.ecr.us-east-1.amazonaws.com
+  
+
+
+  build:
+    commands:
+      - echo Building docker image
+      - docker build -t $IMAGE_URI .
+    
+  post-build:
+    commands:
+      - echo  Pushing the image to ECR
+      - docker push $IMAGE_URI
+      - echo Build COmpleted Successfully.
+
+artifacts:
+  files:
+    - "**/*"
